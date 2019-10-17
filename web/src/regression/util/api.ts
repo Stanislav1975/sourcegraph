@@ -9,11 +9,16 @@ import { map, tap, retryWhen, delayWhen, take } from 'rxjs/operators'
 import { zip, timer, concat, throwError, defer } from 'rxjs'
 import { CloneInProgressError, ECLONEINPROGESS } from '../../../../shared/src/backend/errors'
 import { isErrorLike } from '../../../../shared/src/util/errors'
+import { Config } from '../../../../shared/src/e2e/config'
 
 /**
  * Wait until all repositories in the list exist.
  */
-export async function waitForRepos(gqlClient: GraphQLClient, ensureRepos: string[]): Promise<void> {
+export async function waitForRepos(
+    gqlClient: GraphQLClient,
+    ensureRepos: string[],
+    config?: Partial<Pick<Config, 'log'>>
+): Promise<void> {
     await zip(
         // List of Observables that complete after each repository is successfully fetched.
         ...ensureRepos.map(repoName =>
@@ -47,6 +52,9 @@ export async function waitForRepos(gqlClient: GraphQLClient, ensureRepos: string
                                 delayWhen(error => {
                                     if (isErrorLike(error) && error.code === ECLONEINPROGESS) {
                                         // Delay retry by 2s.
+                                        if (config && config.log) {
+                                            console.log(`Waiting for ${repoName} to finish cloning...`)
+                                        }
                                         return timer(2 * 1000)
                                     }
                                     // Throw all errors other than ECLONEINPROGRESS
@@ -146,7 +154,8 @@ export async function ensureTestExternalService(
         uniqueDisplayName: string
         config: Record<string, any>
         waitForRepos?: string[]
-    }
+    },
+    e2eConfig?: Partial<Pick<Config, 'log'>>
 ): Promise<() => Promise<void>> {
     if (!options.uniqueDisplayName.startsWith('[TEST]')) {
         throw new Error(
@@ -183,7 +192,7 @@ export async function ensureTestExternalService(
         .toPromise()
 
     if (options.waitForRepos && options.waitForRepos.length > 0) {
-        await waitForRepos(gqlClient, options.waitForRepos)
+        await waitForRepos(gqlClient, options.waitForRepos, e2eConfig)
     }
 
     return destroy
