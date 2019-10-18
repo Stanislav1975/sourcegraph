@@ -3,6 +3,9 @@ package resolvers
 import (
 	"context"
 	"database/sql"
+	"math/rand"
+	"sync"
+	"time"
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
@@ -16,17 +19,28 @@ import (
 	"github.com/sourcegraph/sourcegraph/internal/a8n"
 	"github.com/sourcegraph/sourcegraph/internal/api"
 	"github.com/sourcegraph/sourcegraph/internal/httpcli"
+	log15 "gopkg.in/inconshreveable/log15.v2"
 )
 
 // Resolver is the GraphQL resolver of all things A8N.
 type Resolver struct {
 	store       *ee.Store
 	httpFactory *httpcli.Factory
+
+	repoSearcher graphqlbackend.RepoSearcher
 }
 
 // NewResolver returns a new Resolver whose store uses the given db
 func NewResolver(db *sql.DB) graphqlbackend.A8NResolver {
 	return &Resolver{store: ee.NewStore(db)}
+}
+
+func (r *Resolver) HasRepoSearcher() bool {
+	return r.repoSearcher != nil
+}
+
+func (r *Resolver) SetRepoSearcher(rs graphqlbackend.RepoSearcher) {
+	r.repoSearcher = rs
 }
 
 func (r *Resolver) ChangesetByID(ctx context.Context, id graphql.ID) (graphqlbackend.ChangesetResolver, error) {
@@ -337,3 +351,110 @@ func (r *Resolver) Changesets(ctx context.Context, args *graphqlutil.ConnectionA
 		},
 	}, nil
 }
+
+func (r *Resolver) CreateCodeMod(ctx context.Context, args *graphqlbackend.CreateCodeModArgs) (graphqlbackend.CodeModResolver, error) {
+	// 🚨 SECURITY: Only site admins may update campaigns for now
+	if err := backend.CheckCurrentUserIsSiteAdmin(ctx); err != nil {
+		return nil, err
+	}
+
+	// If `CodeModSpec` is defined on `Campaign` we don't need to pass it in
+	specName := args.Input.CodeModSpec
+	if specName == "" {
+		return nil, errors.New("cannot run Campaign without CodeModSpec")
+	}
+	spec, ok := a8n.CodeModSpecs[specName]
+	if !ok {
+		return nil, errors.New("Spec does not exist. Don't know how to run this campaign")
+	}
+
+	// Validate user-supplied args
+	codeModArgs := make(map[string]string, len(args.Input.Args))
+	for _, pair := range args.Input.Args {
+		codeModArgs[pair.Name] = pair.Value
+	}
+	if len(codeModArgs) != len(spec.Parameters) {
+		return nil, errors.New("wrong number of arguments supplied by user")
+	}
+	for _, param := range spec.Parameters {
+		if _, ok := codeModArgs[param]; !ok {
+			return nil, errors.New("user did not specify parameter %s")
+		}
+	}
+
+	// Create CodeMod
+	mod := &a8n.CodeMod{
+		CodeModSpec: specName,
+		Arguments:   codeModArgs,
+	}
+
+	if err := r.store.CreateCodeMod(ctx, mod); err != nil {
+		return nil, err
+	}
+
+	// Search repositories over which to execute code modification
+	if r.repoSearcher == nil {
+		return nil, errors.New("No repo search possible")
+	}
+	repos, err := r.repoSearcher.SearchRepos(ctx, spec.SearchQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	// Run a CodeModJob on each repo
+	var wg sync.WaitGroup
+	for _, repo := range repos {
+		job := &a8n.CodeModJob{
+			CodeModID: mod.ID,
+			StartedAt: time.Now().UTC(),
+		}
+
+		err := relay.UnmarshalSpec(repo.ID(), &job.RepoID)
+		if err != nil {
+			return nil, err
+		}
+
+		// TODO: Save the repo revision
+
+		err = r.store.CreateCodeModJob(ctx, job)
+		if err != nil {
+			return nil, err
+		}
+
+		wg.Add(1)
+		go func(mod *a8n.CodeMod, job *a8n.CodeModJob) {
+			// TODO: Do real work.
+			// Send request to service with Repo, Ref, Arguments.
+			// Receive diff.
+			log15.Info("CodeModJob started", "id", job.ID, "repo_id", job.RepoID)
+
+			seconds := rand.Intn(2)
+			time.Sleep(time.Duration(seconds) * time.Second)
+			job.Diff = bogusDiff
+
+			job.FinishedAt = time.Now()
+
+			err := r.store.UpdateCodeModJob(ctx, job)
+			if err != nil {
+				log15.Error("RunCampaign.UpdateCodeModJob failed", "err", err)
+			}
+
+			log15.Info("CodeModJob finished", "id", job.ID, "repo_id", job.RepoID)
+
+			wg.Done()
+		}(mod, job)
+	}
+
+	wg.Wait()
+
+	return &codeModResolver{store: r.store, codeMod: mod}, nil
+}
+
+const bogusDiff = `diff --git a/README.md b/README.md
+index 323fae0..34a3ec2 100644
+--- a/README.md
++++ b/README.md
+@@ -1 +1 @@
+-foobar
++barfoo
+`

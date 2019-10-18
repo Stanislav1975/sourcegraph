@@ -37,6 +37,11 @@ type Mutation {
     addChangesetsToCampaign(campaign: ID!, changesets: [ID!]!): Campaign!
     # Create a campaign in a namespace. The newly created campaign is returned.
     createCampaign(input: CreateCampaignInput!): Campaign!
+
+    # Create and run a CodeMod according to the spec with the user-supplied
+    # args.
+    createCodeMod(input: CreateCodeModInput!): CodeMod!
+
     # Updates a campaign.
     updateCampaign(input: UpdateCampaignInput!): Campaign!
     # Deletes a campaign.
@@ -399,6 +404,23 @@ input UpdateCampaignInput {
     description: String
 }
 
+# One of the key-value pairs that act as arguments when running a CodeMod.
+input CodeModRunArg {
+    name: String!
+    value: String!
+}
+
+# Input arguments for creating a CodeMod.
+input CreateCodeModInput {
+    # The name of the CodeModSpec to apply
+    codeModSpec: String!
+
+    # The user-supplied args to which teh CodeModSpec will be applied. The names
+    # of the args have to match the names of the parameters defined in the
+    # codeModSpec.
+    args: [CodeModRunArg!]!
+}
+
 # A collection of threads.
 type Campaign implements Node {
     # The unique ID for the campaign.
@@ -437,6 +459,60 @@ type Campaign implements Node {
         # Defaults to now.
         to: DateTime
     ): [ChangesetCounts!]!
+
+    # The CodeMod associated with the campaign when it was created.
+    codeMod: CodeMod
+}
+
+# One of the key-value pairs that act as arguments when running a Campaign.
+type CodeModArg {
+    name: String!
+    value: String!
+}
+
+# A code mod is created when a campaign is run.
+type CodeMod {
+    # The spec that was used to create the code modifications.
+    spec: String!
+
+    # The arguments to which the spec was applied.
+    arguments: [CodeModArg!]!
+
+    # The date and time when the code mod was created.
+    createdAt: DateTime!
+
+    # The date and time when the code mod was updated.
+    updatedAt: DateTime!
+
+    # The jobs that were executed when the CodeMod was created.
+    jobs: [CodeModJob!]!
+}
+
+# A code mod job is the application of a CodeModSpec over CodeMod arguments in
+# a specific repository at a specific commit.
+type CodeModJob {
+    # The CodeMod the CodeModJob belongs to.
+    codeMod: CodeMod!
+
+    # The repository in which the job was executed.
+    repo: Repository!
+
+    # The HEAD revision of repo at which the job was executed.
+    revision: GitObjectID!
+
+    # The result of executing the job. Empty when the job has not finished
+    # executing.
+    diff: String
+
+    # The date and time when the job was started.
+    startedAt: DateTime!
+
+    # The date and time when the job finished executing.
+    finishedAt: DateTime!
+
+    # The error that was produced when the job failed. If nil the job did not
+    # produce an error and finished successfully.
+    error: String
 }
 
 # The counts of changesets in certain states at a specific point in time.

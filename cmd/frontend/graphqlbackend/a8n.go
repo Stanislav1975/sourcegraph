@@ -35,6 +35,18 @@ type UpdateCampaignArgs struct {
 	}
 }
 
+type CodeModRunArg struct {
+	Name  string
+	Value string
+}
+
+type CreateCodeModArgs struct {
+	Input struct {
+		CodeModSpec string
+		Args        []CodeModRunArg
+	}
+}
+
 type DeleteCampaignArgs struct {
 	Campaign graphql.ID
 }
@@ -44,6 +56,10 @@ type CreateChangesetsArgs struct {
 		Repository graphql.ID
 		ExternalID string
 	}
+}
+
+type RepoSearcher interface {
+	SearchRepos(ctx context.Context, query string) ([]*RepositoryResolver, error)
 }
 
 type A8NResolver interface {
@@ -58,6 +74,11 @@ type A8NResolver interface {
 	Changesets(ctx context.Context, args *graphqlutil.ConnectionArgs) (ChangesetsConnectionResolver, error)
 
 	AddChangesetsToCampaign(ctx context.Context, args *AddChangesetsToCampaignArgs) (CampaignResolver, error)
+
+	CreateCodeMod(ctx context.Context, args *CreateCodeModArgs) (CodeModResolver, error)
+
+	HasRepoSearcher() bool
+	SetRepoSearcher(RepoSearcher)
 }
 
 var onlyInEnterprise = errors.New("campaigns and changesets are only available in enterprise")
@@ -67,6 +88,16 @@ func (r *schemaResolver) AddChangesetsToCampaign(ctx context.Context, args *AddC
 		return nil, onlyInEnterprise
 	}
 	return r.a8nResolver.AddChangesetsToCampaign(ctx, args)
+}
+
+func (r *schemaResolver) CreateCodeMod(ctx context.Context, args *CreateCodeModArgs) (CodeModResolver, error) {
+	if r.a8nResolver == nil {
+		return nil, onlyInEnterprise
+	}
+	if !r.a8nResolver.HasRepoSearcher() {
+		r.a8nResolver.SetRepoSearcher(r)
+	}
+	return r.a8nResolver.CreateCodeMod(ctx, args)
 }
 
 func (r *schemaResolver) CreateCampaign(ctx context.Context, args *CreateCampaignArgs) (CampaignResolver, error) {
@@ -127,6 +158,7 @@ type CampaignResolver interface {
 	UpdatedAt() DateTime
 	Changesets(ctx context.Context, args struct{ graphqlutil.ConnectionArgs }) ChangesetsConnectionResolver
 	ChangesetCountsOverTime(ctx context.Context, args *ChangesetCountsArgs) ([]ChangesetCountsResolver, error)
+	CodeMod(ctx context.Context) (CodeModResolver, error)
 }
 
 type CampaignsConnectionResolver interface {
@@ -176,4 +208,33 @@ type ChangesetCountsResolver interface {
 	OpenApproved() int32
 	OpenChangesRequested() int32
 	OpenPending() int32
+}
+
+type CodeModArgResolver interface {
+	Name() string
+	Value() string
+}
+
+type CodeModResolver interface {
+	Spec() string
+	Arguments() []CodeModArgResolver
+
+	CreatedAt() DateTime
+	UpdatedAt() DateTime
+
+	Jobs(context.Context) ([]CodeModJobResolver, error)
+}
+
+type CodeModJobResolver interface {
+	CodeMod(context.Context) (CodeModResolver, error)
+	Repo(ctx context.Context) (*RepositoryResolver, error)
+
+	Revision() GitObjectID
+
+	Diff() *string
+
+	StartedAt() DateTime
+	FinishedAt() DateTime
+
+	Error() *string
 }

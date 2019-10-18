@@ -1,0 +1,7 @@
+BEGIN;
+
+ALTER TABLE campaigns DROP COLUMN IF EXISTS code_mod_id;
+
+DROP TABLE IF EXISTS code_mods;
+
+COMMIT;

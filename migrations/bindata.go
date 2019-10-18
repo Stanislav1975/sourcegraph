@@ -48,6 +48,10 @@
 // 1528395604_lsif_multi_project.up.sql (3.798kB)
 // 1528395605_drop_recent_searches.down.sql (107B)
 // 1528395605_drop_recent_searches.up.sql (103B)
+// 1528395606_create_code_mods_table.down.sql (107B)
+// 1528395606_create_code_mods_table.up.sql (455B)
+// 1528395607_create_code_mod_jobs_table.down.sql (54B)
+// 1528395607_create_code_mod_jobs_table.up.sql (541B)
 
 package migrations
 
@@ -1076,6 +1080,86 @@ func _1528395605_drop_recent_searchesUpSql() (*asset, error) {
 	return a, nil
 }
 
+var __1528395606_create_code_mods_tableDownSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\x72\x75\xf7\xf4\xb3\xe6\xe2\x72\xf4\x09\x71\x0d\x52\x08\x71\x74\xf2\x71\x55\x48\x4e\xcc\x2d\x48\xcc\x4c\xcf\x2b\x56\x70\x09\xf2\x0f\x50\x70\xf6\xf7\x09\xf5\xf5\x53\xf0\x74\x53\x70\x8d\xf0\x0c\x0e\x09\x56\x48\xce\x4f\x49\x8d\xcf\xcd\x4f\x89\xcf\x4c\xb1\xe6\xe2\x02\xab\x81\x68\xc4\x54\x52\x6c\xcd\xc5\xe5\xec\xef\xeb\xeb\x19\x62\xcd\x05\x08\x00\x00\xff\xff\xd9\x56\x41\xcc\x6b\x00\x00\x00")
+
+func _1528395606_create_code_mods_tableDownSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__1528395606_create_code_mods_tableDownSql,
+		"1528395606_create_code_mods_table.down.sql",
+	)
+}
+
+func _1528395606_create_code_mods_tableDownSql() (*asset, error) {
+	bytes, err := _1528395606_create_code_mods_tableDownSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "1528395606_create_code_mods_table.down.sql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xda, 0x98, 0x7f, 0x1, 0xc8, 0xf0, 0xa6, 0x9a, 0x49, 0xcf, 0x47, 0x6d, 0xad, 0xfb, 0xa1, 0x5a, 0xb9, 0xec, 0x1f, 0x41, 0x56, 0x9c, 0x33, 0x2f, 0x93, 0xd7, 0x64, 0x4b, 0xf8, 0xed, 0x54, 0x7f}}
+	return a, nil
+}
+
+var __1528395606_create_code_mods_tableUpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x9c\x91\xcd\x6a\xe3\x30\x14\x85\xf7\x7a\x8a\x33\x2b\xdb\x30\x6f\x10\xb2\x50\xec\x9b\x19\x11\xd9\x19\x3c\xca\x22\x2b\xa3\x58\xaa\xab\x50\x5b\xc6\x52\x48\x7f\xe8\xbb\x97\xb8\x24\xa1\x74\xd7\xe5\xe5\x9e\xef\x5c\xf8\xee\x8a\xfe\x88\x6a\xc1\x58\x5e\x13\x57\x04\xc5\x57\x92\xd0\x7a\x63\x9b\xde\x9b\x80\x94\x01\xce\xe0\xe0\xba\x60\x27\xa7\x9f\xf0\xaf\x16\x25\xaf\xf7\xd8\xd0\xfe\x37\xc3\x2d\xd9\x84\xd1\xb6\x88\xf6\x39\xa2\xda\x2a\x54\x3b\x29\x91\xff\xa5\x7c\x83\xf4\x6b\xe4\xd7\x12\x49\x92\x5d\x50\x3d\x75\xa7\xde\x0e\x31\xe0\x18\xfc\x70\xb8\x73\x05\xad\xf9\x4e\x2a\x24\x6f\xef\x09\x03\x70\x2d\x9a\x63\x4d\x7c\x19\xad\x7f\x48\x6f\x74\x86\x25\x12\x7f\x38\xda\x36\x7e\xf6\xb6\x93\xd5\xd1\x9a\x46\x47\x44\xd7\xdb\x10\x75\x3f\xe2\xec\xe2\xe3\x3c\xe2\xd5\x0f\xf6\xfb\xad\xc1\x9f\xd3\x99\x3e\x8d\xe6\x87\x34\xcb\x16\x8c\x71\xa9\xa8\xbe\x5a\xd4\xfd\xa8\x5d\x37\x04\xc6\x8b\x02\xf9\x56\xee\xca\xea\x2e\xcc\x19\xb8\x21\xda\xce\x4e\xa8\x69\x4d\x35\x55\x39\xfd\xbf\x9b\x4f\x9d\xc9\x58\x71\x59\xd4\x73\x99\xa8\x84\x12\x5c\xca\x3d\x44\x59\x52\x21\xb8\xa2\xcb\xd7\xb6\x65\x29\xd4\x82\xb1\x8f\x00\x00\x00\xff\xff\x12\xb3\x89\xef\xc7\x01\x00\x00")
+
+func _1528395606_create_code_mods_tableUpSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__1528395606_create_code_mods_tableUpSql,
+		"1528395606_create_code_mods_table.up.sql",
+	)
+}
+
+func _1528395606_create_code_mods_tableUpSql() (*asset, error) {
+	bytes, err := _1528395606_create_code_mods_tableUpSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "1528395606_create_code_mods_table.up.sql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xc3, 0xd, 0x81, 0x8a, 0x98, 0x8, 0xaa, 0xe8, 0x93, 0x42, 0x44, 0x23, 0xf, 0x84, 0x3b, 0x27, 0xb3, 0x11, 0xd, 0x50, 0xae, 0x68, 0x7f, 0xd1, 0x70, 0xc6, 0x6c, 0x3b, 0xd3, 0x6a, 0x94, 0xb5}}
+	return a, nil
+}
+
+var __1528395607_create_code_mod_jobs_tableDownSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\x72\x75\xf7\xf4\xb3\xe6\xe2\x72\x09\xf2\x0f\x50\x08\x71\x74\xf2\x71\x55\xf0\x74\x53\x70\x8d\xf0\x0c\x0e\x09\x56\x48\xce\x4f\x49\x8d\xcf\xcd\x4f\x89\xcf\xca\x4f\x2a\xb6\xe6\xe2\x72\xf6\xf7\xf5\xf5\x0c\xb1\xe6\xe2\x02\x04\x00\x00\xff\xff\x85\xb0\x82\xdc\x36\x00\x00\x00")
+
+func _1528395607_create_code_mod_jobs_tableDownSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__1528395607_create_code_mod_jobs_tableDownSql,
+		"1528395607_create_code_mod_jobs_table.down.sql",
+	)
+}
+
+func _1528395607_create_code_mod_jobs_tableDownSql() (*asset, error) {
+	bytes, err := _1528395607_create_code_mod_jobs_tableDownSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "1528395607_create_code_mod_jobs_table.down.sql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x53, 0xf6, 0x93, 0x92, 0xfc, 0xfb, 0xd5, 0x8e, 0xa2, 0xa2, 0xff, 0x83, 0x47, 0xa2, 0x47, 0x61, 0x64, 0xad, 0x2b, 0xda, 0x8d, 0x4e, 0xec, 0x1, 0xe2, 0xd3, 0x1c, 0xde, 0x59, 0xb7, 0x2c, 0x22}}
+	return a, nil
+}
+
+var __1528395607_create_code_mod_jobs_tableUpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x9c\x92\xc1\x6a\xf3\x30\x10\x84\xef\x7a\x8a\x39\x26\x90\x37\xc8\x49\xb1\x37\x3f\xe2\x97\x95\xa2\x28\x87\x9c\x82\x53\x29\x8d\x4a\x6d\x19\x49\x6d\x4a\x9f\xbe\xc8\x85\x18\x4a\xc1\xa5\x47\x0d\xdf\xcc\x68\x97\xdd\xd0\x3f\xa1\xd6\x8c\x55\x9a\xb8\x21\x18\xbe\x91\x84\xc7\x60\xdd\xa9\x0b\xf6\xf4\x1c\xce\x09\x0b\x06\x78\x8b\xb3\x7f\x4a\x2e\xfa\xf6\x05\x0f\x5a\x34\x5c\x1f\xf1\x9f\x8e\x2b\x86\x89\xfe\x82\x7c\x9f\xa1\x76\x06\xea\x20\x25\x34\x6d\x49\x93\xaa\x68\x7f\xc7\xd2\xc2\xdb\x25\x03\x80\x9d\x42\x4d\x92\x0c\xa1\xe2\xfb\x8a\xd7\x84\xba\xe0\x7a\xfc\x83\x50\xc2\x08\x2e\xe5\x11\xa2\x69\xa8\x16\xdc\xd0\x8a\x31\x20\xba\x21\xcc\x34\x15\xe4\x5e\xf2\xab\xc8\x37\x64\xf7\x3e\x85\x8d\xaa\xf5\x97\xcb\x77\x19\x70\x31\x86\xf8\x03\x9d\x72\x1b\xb3\xb3\xa7\x36\x23\xfb\xce\xa5\xdc\x76\x03\x6e\x3e\x5f\xc7\x27\x3e\x42\xef\x8a\xfd\xe2\x7b\x9f\xae\x73\x5c\x59\x6a\x74\xed\x4c\xde\x34\x7b\x4d\x5b\x7e\x90\x06\x7d\xb8\x2d\x96\xa5\xe6\x75\xb0\x7f\x74\xb3\x65\x39\x86\x5d\xd3\x08\xb3\x66\x9f\x01\x00\x00\xff\xff\xb5\xcb\x0b\xbb\x1d\x02\x00\x00")
+
+func _1528395607_create_code_mod_jobs_tableUpSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__1528395607_create_code_mod_jobs_tableUpSql,
+		"1528395607_create_code_mod_jobs_table.up.sql",
+	)
+}
+
+func _1528395607_create_code_mod_jobs_tableUpSql() (*asset, error) {
+	bytes, err := _1528395607_create_code_mod_jobs_tableUpSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "1528395607_create_code_mod_jobs_table.up.sql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xf8, 0xe2, 0x34, 0x36, 0x26, 0x99, 0x1, 0xf3, 0x56, 0x6, 0x28, 0x42, 0xb0, 0xae, 0x4e, 0xbf, 0xbc, 0x4c, 0x1a, 0x47, 0xc4, 0x11, 0x2c, 0x19, 0xd6, 0xa, 0x61, 0x47, 0x14, 0x6a, 0xb6, 0x81}}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -1262,6 +1346,14 @@ var _bindata = map[string]func() (*asset, error){
 	"1528395605_drop_recent_searches.down.sql": _1528395605_drop_recent_searchesDownSql,
 
 	"1528395605_drop_recent_searches.up.sql": _1528395605_drop_recent_searchesUpSql,
+
+	"1528395606_create_code_mods_table.down.sql": _1528395606_create_code_mods_tableDownSql,
+
+	"1528395606_create_code_mods_table.up.sql": _1528395606_create_code_mods_tableUpSql,
+
+	"1528395607_create_code_mod_jobs_table.down.sql": _1528395607_create_code_mod_jobs_tableDownSql,
+
+	"1528395607_create_code_mod_jobs_table.up.sql": _1528395607_create_code_mod_jobs_tableUpSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -1353,6 +1445,10 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"1528395604_lsif_multi_project.up.sql":                                     {_1528395604_lsif_multi_projectUpSql, map[string]*bintree{}},
 	"1528395605_drop_recent_searches.down.sql":                                 {_1528395605_drop_recent_searchesDownSql, map[string]*bintree{}},
 	"1528395605_drop_recent_searches.up.sql":                                   {_1528395605_drop_recent_searchesUpSql, map[string]*bintree{}},
+	"1528395606_create_code_mods_table.down.sql":                               {_1528395606_create_code_mods_tableDownSql, map[string]*bintree{}},
+	"1528395606_create_code_mods_table.up.sql":                                 {_1528395606_create_code_mods_tableUpSql, map[string]*bintree{}},
+	"1528395607_create_code_mod_jobs_table.down.sql":                           {_1528395607_create_code_mod_jobs_tableDownSql, map[string]*bintree{}},
+	"1528395607_create_code_mod_jobs_table.up.sql":                             {_1528395607_create_code_mod_jobs_tableUpSql, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory.

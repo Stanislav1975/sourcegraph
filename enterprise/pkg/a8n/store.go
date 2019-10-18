@@ -1108,6 +1108,543 @@ func listCampaignsQuery(opts *ListCampaignsOpts) *sqlf.Query {
 	)
 }
 
+// CreateCodeMod creates the given CodeMod.
+func (s *Store) CreateCodeMod(ctx context.Context, c *a8n.CodeMod) error {
+	q, err := s.createCodeModQuery(c)
+	if err != nil {
+		return err
+	}
+
+	return s.exec(ctx, q, func(sc scanner) (last, count int64, err error) {
+		err = scanCodeMod(c, sc)
+		return int64(c.ID), 1, err
+	})
+}
+
+var createCodeModQueryFmtstr = `
+-- source: pkg/a8n/store.go:CreateCodeMod
+INSERT INTO code_mods (
+  code_mod_spec,
+  arguments,
+  created_at,
+  updated_at
+)
+VALUES (%s, %s, %s, %s)
+RETURNING
+  id,
+  code_mod_spec,
+  arguments,
+  created_at,
+  updated_at
+`
+
+func (s *Store) createCodeModQuery(c *a8n.CodeMod) (*sqlf.Query, error) {
+	if c.CreatedAt.IsZero() {
+		c.CreatedAt = s.now()
+	}
+
+	if c.UpdatedAt.IsZero() {
+		c.UpdatedAt = c.CreatedAt
+	}
+
+	arguments, err := metadataColumn(c.Arguments)
+	if err != nil {
+		return nil, err
+	}
+
+	return sqlf.Sprintf(
+		createCodeModQueryFmtstr,
+		c.CodeModSpec,
+		arguments,
+		c.CreatedAt,
+		c.UpdatedAt,
+	), nil
+}
+
+// UpdateCodeMod updates the given CodeMod.
+func (s *Store) UpdateCodeMod(ctx context.Context, c *a8n.CodeMod) error {
+	q, err := s.updateCodeModQuery(c)
+	if err != nil {
+		return err
+	}
+
+	return s.exec(ctx, q, func(sc scanner) (last, count int64, err error) {
+		err = scanCodeMod(c, sc)
+		return int64(c.ID), 1, err
+	})
+}
+
+var updateCodeModQueryFmtstr = `
+-- source: pkg/a8n/store.go:UpdateCodeMod
+UPDATE code_mods
+SET (
+  code_mod_spec,
+  arguments,
+  updated_at
+) = (%s, %s, %s)
+WHERE id = %s
+RETURNING
+  id,
+  code_mod_spec,
+  arguments,
+  created_at,
+  updated_at
+`
+
+func (s *Store) updateCodeModQuery(c *a8n.CodeMod) (*sqlf.Query, error) {
+	c.UpdatedAt = s.now()
+
+	arguments, err := metadataColumn(c.Arguments)
+	if err != nil {
+		return nil, err
+	}
+
+	return sqlf.Sprintf(
+		updateCodeModQueryFmtstr,
+		c.CodeModSpec,
+		arguments,
+		c.UpdatedAt,
+		c.ID,
+	), nil
+}
+
+// DeleteCodeMod deletes the CodeMod with the given ID.
+func (s *Store) DeleteCodeMod(ctx context.Context, id int64) error {
+	q := sqlf.Sprintf(deleteCodeModQueryFmtstr, id)
+
+	rows, err := s.db.QueryContext(ctx, q.Query(sqlf.PostgresBindVar), q.Args()...)
+	if err != nil {
+		return err
+	}
+	return rows.Close()
+}
+
+var deleteCodeModQueryFmtstr = `
+-- source: pkg/a8n/store.go:DeleteCodeMod
+DELETE FROM code_mods WHERE id = %s
+`
+
+// CountCodeMods returns the number of code mods in the database.
+func (s *Store) CountCodeMods(ctx context.Context) (count int64, _ error) {
+	q := sqlf.Sprintf(countCodeModsQueryFmtstr)
+	return count, s.exec(ctx, q, func(sc scanner) (_, _ int64, err error) {
+		err = sc.Scan(&count)
+		return 0, count, err
+	})
+}
+
+var countCodeModsQueryFmtstr = `
+-- source: pkg/a8n/store.go:CountCodeMods
+SELECT COUNT(id)
+FROM code_mods
+`
+
+// GetCodeModOpts captures the query options needed for getting a CodeMod
+type GetCodeModOpts struct {
+	ID int64
+}
+
+// GetCodeMod gets a code mod matching the given options.
+func (s *Store) GetCodeMod(ctx context.Context, opts GetCodeModOpts) (*a8n.CodeMod, error) {
+	q := getCodeModQuery(&opts)
+
+	var c a8n.CodeMod
+	err := s.exec(ctx, q, func(sc scanner) (_, _ int64, err error) {
+		return 0, 0, scanCodeMod(&c, sc)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if c.ID == 0 {
+		return nil, ErrNoResults
+	}
+
+	return &c, nil
+}
+
+var getCodeModsQueryFmtstr = `
+-- source: pkg/a8n/store.go:GetCodeMod
+SELECT
+  id,
+  code_mod_spec,
+  arguments,
+  created_at,
+  updated_at
+FROM code_mods
+WHERE %s
+LIMIT 1
+`
+
+func getCodeModQuery(opts *GetCodeModOpts) *sqlf.Query {
+	var preds []*sqlf.Query
+	if opts.ID != 0 {
+		preds = append(preds, sqlf.Sprintf("id = %s", opts.ID))
+	}
+
+	if len(preds) == 0 {
+		preds = append(preds, sqlf.Sprintf("TRUE"))
+	}
+
+	return sqlf.Sprintf(getCodeModsQueryFmtstr, sqlf.Join(preds, "\n AND "))
+}
+
+// ListCodeModsOpts captures the query options needed for
+// listing code mods.
+type ListCodeModsOpts struct {
+	Cursor int64
+	Limit  int
+}
+
+// ListCodeMods lists CodeMods with the given filters.
+func (s *Store) ListCodeMods(ctx context.Context, opts ListCodeModsOpts) (cs []*a8n.CodeMod, next int64, err error) {
+	q := listCodeModsQuery(&opts)
+
+	cs = make([]*a8n.CodeMod, 0, opts.Limit)
+	_, _, err = s.query(ctx, q, func(sc scanner) (last, count int64, err error) {
+		var c a8n.CodeMod
+		if err = scanCodeMod(&c, sc); err != nil {
+			return 0, 0, err
+		}
+		cs = append(cs, &c)
+		return int64(c.ID), 1, err
+	})
+
+	if len(cs) == opts.Limit {
+		next = cs[len(cs)-1].ID
+		cs = cs[:len(cs)-1]
+	}
+
+	return cs, next, err
+}
+
+var listCodeModsQueryFmtstr = `
+-- source: pkg/a8n/store.go:ListCodeMods
+SELECT
+  id,
+  code_mod_spec,
+  arguments,
+  created_at,
+  updated_at
+FROM code_mods
+WHERE %s
+ORDER BY id ASC
+LIMIT %s
+`
+
+func listCodeModsQuery(opts *ListCodeModsOpts) *sqlf.Query {
+	if opts.Limit == 0 {
+		opts.Limit = defaultListLimit
+	}
+	opts.Limit++
+
+	preds := []*sqlf.Query{
+		sqlf.Sprintf("id >= %s", opts.Cursor),
+	}
+
+	return sqlf.Sprintf(
+		listCodeModsQueryFmtstr,
+		sqlf.Join(preds, "\n AND "),
+		opts.Limit,
+	)
+}
+
+// CreateCodeModJob creates the given CodeModJob.
+func (s *Store) CreateCodeModJob(ctx context.Context, c *a8n.CodeModJob) error {
+	q, err := s.createCodeModJobQuery(c)
+	if err != nil {
+		return err
+	}
+
+	return s.exec(ctx, q, func(sc scanner) (last, count int64, err error) {
+		err = scanCodeModJob(c, sc)
+		return int64(c.ID), 1, err
+	})
+}
+
+var createCodeModJobQueryFmtstr = `
+-- source: pkg/a8n/store.go:CreateCodeModJob
+INSERT INTO code_mod_jobs (
+  code_mod_id,
+  repo_id,
+  rev,
+  diff,
+  error,
+  started_at,
+  finished_at,
+  created_at,
+  updated_at
+)
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+RETURNING
+  id,
+  code_mod_id,
+  repo_id,
+  rev,
+  diff,
+  error,
+  started_at,
+  finished_at,
+  created_at,
+  updated_at
+`
+
+func (s *Store) createCodeModJobQuery(c *a8n.CodeModJob) (*sqlf.Query, error) {
+	if c.CreatedAt.IsZero() {
+		c.CreatedAt = s.now()
+	}
+
+	if c.UpdatedAt.IsZero() {
+		c.UpdatedAt = c.CreatedAt
+	}
+
+	return sqlf.Sprintf(
+		createCodeModJobQueryFmtstr,
+		c.CodeModID,
+		c.RepoID,
+		c.Rev,
+		c.Diff,
+		c.Error,
+		c.StartedAt,
+		c.FinishedAt,
+		c.CreatedAt,
+		c.UpdatedAt,
+	), nil
+}
+
+// UpdateCodeModJob updates the given CodeModJob.
+func (s *Store) UpdateCodeModJob(ctx context.Context, c *a8n.CodeModJob) error {
+	q, err := s.updateCodeModJobQuery(c)
+	if err != nil {
+		return err
+	}
+
+	return s.exec(ctx, q, func(sc scanner) (last, count int64, err error) {
+		err = scanCodeModJob(c, sc)
+		return int64(c.ID), 1, err
+	})
+}
+
+var updateCodeModJobQueryFmtstr = `
+-- source: pkg/a8n/store.go:UpdateCodeModJob
+UPDATE code_mod_jobs
+SET (
+  code_mod_id,
+  repo_id,
+  rev,
+  diff,
+  error,
+  started_at,
+  finished_at,
+  updated_at
+) = (%s, %s, %s, %s, %s, %s, %s, %s)
+WHERE id = %s
+RETURNING
+  id,
+  code_mod_id,
+  repo_id,
+  rev,
+  diff,
+  error,
+  started_at,
+  finished_at,
+  created_at,
+  updated_at
+`
+
+func (s *Store) updateCodeModJobQuery(c *a8n.CodeModJob) (*sqlf.Query, error) {
+	c.UpdatedAt = s.now()
+
+	return sqlf.Sprintf(
+		updateCodeModJobQueryFmtstr,
+		c.CodeModID,
+		c.RepoID,
+		c.Rev,
+		c.Diff,
+		c.Error,
+		c.StartedAt,
+		c.FinishedAt,
+		c.UpdatedAt,
+		c.ID,
+	), nil
+}
+
+// DeleteCodeModJob deletes the CodeModJob with the given ID.
+func (s *Store) DeleteCodeModJob(ctx context.Context, id int64) error {
+	q := sqlf.Sprintf(deleteCodeModJobQueryFmtstr, id)
+
+	rows, err := s.db.QueryContext(ctx, q.Query(sqlf.PostgresBindVar), q.Args()...)
+	if err != nil {
+		return err
+	}
+	return rows.Close()
+}
+
+var deleteCodeModJobQueryFmtstr = `
+-- source: pkg/a8n/store.go:DeleteCodeModJob
+DELETE FROM code_mod_jobs WHERE id = %s
+`
+
+// CountCodeModJobsOpts captures the query options needed for
+// counting code mods.
+type CountCodeModJobsOpts struct {
+	CodeModID int64
+}
+
+// CountCodeModJobs returns the number of code mods in the database.
+func (s *Store) CountCodeModJobs(ctx context.Context, opts CountCodeModJobsOpts) (count int64, _ error) {
+	q := countCodeModJobsQuery(&opts)
+	return count, s.exec(ctx, q, func(sc scanner) (_, _ int64, err error) {
+		err = sc.Scan(&count)
+		return 0, count, err
+	})
+}
+
+var countCodeModJobsQueryFmtstr = `
+-- source: pkg/a8n/store.go:CountCodeModJobs
+SELECT COUNT(id)
+FROM code_mod_jobs
+WHERE %s
+`
+
+func countCodeModJobsQuery(opts *CountCodeModJobsOpts) *sqlf.Query {
+	var preds []*sqlf.Query
+	if opts.CodeModID != 0 {
+		preds = append(preds, sqlf.Sprintf("code_mod_id = %s", opts.CodeModID))
+	}
+
+	if len(preds) == 0 {
+		preds = append(preds, sqlf.Sprintf("TRUE"))
+	}
+
+	return sqlf.Sprintf(countCodeModJobsQueryFmtstr, sqlf.Join(preds, "\n AND "))
+}
+
+// GetCodeModJobOpts captures the query options needed for getting a CodeModJob
+type GetCodeModJobOpts struct {
+	ID int64
+}
+
+// GetCodeModJob gets a code mod matching the given options.
+func (s *Store) GetCodeModJob(ctx context.Context, opts GetCodeModJobOpts) (*a8n.CodeModJob, error) {
+	q := getCodeModJobQuery(&opts)
+
+	var c a8n.CodeModJob
+	err := s.exec(ctx, q, func(sc scanner) (_, _ int64, err error) {
+		return 0, 0, scanCodeModJob(&c, sc)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if c.ID == 0 {
+		return nil, ErrNoResults
+	}
+
+	return &c, nil
+}
+
+var getCodeModJobsQueryFmtstr = `
+-- source: pkg/a8n/store.go:GetCodeModJob
+SELECT
+  id,
+  code_mod_id,
+  repo_id,
+  rev,
+  diff,
+  error,
+  started_at,
+  finished_at,
+  created_at,
+  updated_at
+FROM code_mod_jobs
+WHERE %s
+LIMIT 1
+`
+
+func getCodeModJobQuery(opts *GetCodeModJobOpts) *sqlf.Query {
+	var preds []*sqlf.Query
+	if opts.ID != 0 {
+		preds = append(preds, sqlf.Sprintf("id = %s", opts.ID))
+	}
+
+	if len(preds) == 0 {
+		preds = append(preds, sqlf.Sprintf("TRUE"))
+	}
+
+	return sqlf.Sprintf(getCodeModJobsQueryFmtstr, sqlf.Join(preds, "\n AND "))
+}
+
+// ListCodeModJobsOpts captures the query options needed for
+// listing code mods.
+type ListCodeModJobsOpts struct {
+	CodeModID int64
+	Cursor    int64
+	Limit     int
+}
+
+// ListCodeModJobs lists CodeModJobs with the given filters.
+func (s *Store) ListCodeModJobs(ctx context.Context, opts ListCodeModJobsOpts) (cs []*a8n.CodeModJob, next int64, err error) {
+	q := listCodeModJobsQuery(&opts)
+
+	cs = make([]*a8n.CodeModJob, 0, opts.Limit)
+	_, _, err = s.query(ctx, q, func(sc scanner) (last, count int64, err error) {
+		var c a8n.CodeModJob
+		if err = scanCodeModJob(&c, sc); err != nil {
+			return 0, 0, err
+		}
+		cs = append(cs, &c)
+		return int64(c.ID), 1, err
+	})
+
+	if len(cs) == opts.Limit {
+		next = cs[len(cs)-1].ID
+		cs = cs[:len(cs)-1]
+	}
+
+	return cs, next, err
+}
+
+var listCodeModJobsQueryFmtstr = `
+-- source: pkg/a8n/store.go:ListCodeModJobs
+SELECT
+  id,
+  code_mod_id,
+  repo_id,
+  rev,
+  diff,
+  error,
+  started_at,
+  finished_at,
+  created_at,
+  updated_at
+FROM code_mod_jobs
+WHERE %s
+ORDER BY id ASC
+LIMIT %s
+`
+
+func listCodeModJobsQuery(opts *ListCodeModJobsOpts) *sqlf.Query {
+	if opts.Limit == 0 {
+		opts.Limit = defaultListLimit
+	}
+	opts.Limit++
+
+	preds := []*sqlf.Query{
+		sqlf.Sprintf("id >= %s", opts.Cursor),
+	}
+
+	if opts.CodeModID != 0 {
+		preds = append(preds, sqlf.Sprintf("code_mod_id = %s", opts.CodeModID))
+	}
+
+	return sqlf.Sprintf(
+		listCodeModJobsQueryFmtstr,
+		sqlf.Join(preds, "\n AND "),
+		opts.Limit,
+	)
+}
+
 func (s *Store) exec(ctx context.Context, q *sqlf.Query, sc scanFunc) error {
 	_, _, err := s.query(ctx, q, sc)
 	return err
@@ -1247,6 +1784,42 @@ func scanCampaign(c *a8n.Campaign, s scanner) error {
 		&c.CreatedAt,
 		&c.UpdatedAt,
 		&dbutil.JSONInt64Set{Set: &c.ChangesetIDs},
+	)
+}
+
+func scanCodeMod(c *a8n.CodeMod, s scanner) error {
+	var arguments json.RawMessage
+
+	err := s.Scan(
+		&c.ID,
+		&c.CodeModSpec,
+		&arguments,
+		&c.CreatedAt,
+		&c.UpdatedAt,
+	)
+	if err != nil {
+		return err
+	}
+
+	if err = json.Unmarshal(arguments, &c.Arguments); err != nil {
+		return errors.Wrap(err, "scanCodeMod: failed to unmarshal arguments")
+	}
+
+	return nil
+}
+
+func scanCodeModJob(c *a8n.CodeModJob, s scanner) error {
+	return s.Scan(
+		&c.ID,
+		&c.CodeModID,
+		&c.RepoID,
+		&c.Rev,
+		&c.Diff,
+		&c.Error,
+		&c.StartedAt,
+		&c.FinishedAt,
+		&c.CreatedAt,
+		&c.UpdatedAt,
 	)
 }
 

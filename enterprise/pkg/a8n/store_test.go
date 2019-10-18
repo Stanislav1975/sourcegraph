@@ -28,6 +28,8 @@ func testStore(db *sql.DB) func(*testing.T) {
 
 		ctx := context.Background()
 
+		deferConstraint(t, tx, "code_mod_jobs_repo_id_fkey")
+
 		t.Run("Campaigns", func(t *testing.T) {
 			campaigns := make([]*a8n.Campaign, 0, 3)
 
@@ -849,5 +851,395 @@ func testStore(db *sql.DB) func(*testing.T) {
 				})
 			})
 		})
+
+		t.Run("CodeMods", func(t *testing.T) {
+			codeMods := make([]*a8n.CodeMod, 0, 3)
+
+			t.Run("Create", func(t *testing.T) {
+				for i := 0; i < cap(codeMods); i++ {
+					c := &a8n.CodeMod{
+						CodeModSpec: "COMBY",
+						Arguments:   map[string]string{"pattern": "foobar"},
+					}
+
+					want := c.Clone()
+					have := c
+
+					err := s.CreateCodeMod(ctx, have)
+					if err != nil {
+						t.Fatal(err)
+					}
+
+					if have.ID == 0 {
+						t.Fatal("ID should not be zero")
+					}
+
+					want.ID = have.ID
+					want.CreatedAt = now
+					want.UpdatedAt = now
+
+					if diff := cmp.Diff(have, want); diff != "" {
+						t.Fatal(diff)
+					}
+
+					codeMods = append(codeMods, c)
+				}
+			})
+
+			t.Run("Count", func(t *testing.T) {
+				count, err := s.CountCodeMods(ctx)
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				if have, want := count, int64(len(codeMods)); have != want {
+					t.Fatalf("have count: %d, want: %d", have, want)
+				}
+			})
+
+			t.Run("List", func(t *testing.T) {
+				opts := ListCodeModsOpts{}
+
+				ts, next, err := s.ListCodeMods(ctx, opts)
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				if have, want := next, int64(0); have != want {
+					t.Fatalf("opts: %+v: have next %v, want %v", opts, have, want)
+				}
+
+				have, want := ts, codeMods
+				if len(have) != len(want) {
+					t.Fatalf("listed %d codeMods, want: %d", len(have), len(want))
+				}
+
+				if diff := cmp.Diff(have, want); diff != "" {
+					t.Fatalf("opts: %+v, diff: %s", opts, diff)
+				}
+
+				for i := 1; i <= len(codeMods); i++ {
+					cs, next, err := s.ListCodeMods(ctx, ListCodeModsOpts{Limit: i})
+					if err != nil {
+						t.Fatal(err)
+					}
+
+					{
+						have, want := next, int64(0)
+						if i < len(codeMods) {
+							want = codeMods[i].ID
+						}
+
+						if have != want {
+							t.Fatalf("limit: %v: have next %v, want %v", i, have, want)
+						}
+					}
+
+					{
+						have, want := cs, codeMods[:i]
+						if len(have) != len(want) {
+							t.Fatalf("listed %d codeMods, want: %d", len(have), len(want))
+						}
+
+						if diff := cmp.Diff(have, want); diff != "" {
+							t.Fatal(diff)
+						}
+					}
+				}
+
+				{
+					var cursor int64
+					for i := 1; i <= len(codeMods); i++ {
+						opts := ListCodeModsOpts{Cursor: cursor, Limit: 1}
+						have, next, err := s.ListCodeMods(ctx, opts)
+						if err != nil {
+							t.Fatal(err)
+						}
+
+						want := codeMods[i-1 : i]
+						if diff := cmp.Diff(have, want); diff != "" {
+							t.Fatalf("opts: %+v, diff: %s", opts, diff)
+						}
+
+						cursor = next
+					}
+				}
+			})
+
+			t.Run("Update", func(t *testing.T) {
+				for _, c := range codeMods {
+					c.CodeModSpec += "-updated"
+					c.Arguments["anotherArg"] = "anotherValue"
+
+					now = now.Add(time.Second)
+					want := c
+					want.UpdatedAt = now
+
+					have := c.Clone()
+					if err := s.UpdateCodeMod(ctx, have); err != nil {
+						t.Fatal(err)
+					}
+
+					if diff := cmp.Diff(have, want); diff != "" {
+						t.Fatal(diff)
+					}
+				}
+			})
+
+			t.Run("Get", func(t *testing.T) {
+				t.Run("ByID", func(t *testing.T) {
+					if len(codeMods) == 0 {
+						t.Fatalf("codeMods is empty")
+					}
+					want := codeMods[0]
+					opts := GetCodeModOpts{ID: want.ID}
+
+					have, err := s.GetCodeMod(ctx, opts)
+					if err != nil {
+						t.Fatal(err)
+					}
+
+					if diff := cmp.Diff(have, want); diff != "" {
+						t.Fatal(diff)
+					}
+				})
+
+				t.Run("NoResults", func(t *testing.T) {
+					opts := GetCodeModOpts{ID: 0xdeadbeef}
+
+					_, have := s.GetCodeMod(ctx, opts)
+					want := ErrNoResults
+
+					if have != want {
+						t.Fatalf("have err %v, want %v", have, want)
+					}
+				})
+			})
+
+			t.Run("Delete", func(t *testing.T) {
+				for i := range codeMods {
+					err := s.DeleteCodeMod(ctx, codeMods[i].ID)
+					if err != nil {
+						t.Fatal(err)
+					}
+
+					count, err := s.CountCodeMods(ctx)
+					if err != nil {
+						t.Fatal(err)
+					}
+
+					if have, want := count, int64(len(codeMods)-(i+1)); have != want {
+						t.Fatalf("have count: %d, want: %d", have, want)
+					}
+				}
+			})
+		})
+
+		t.Run("CodeModJobs", func(t *testing.T) {
+			codeModJobs := make([]*a8n.CodeModJob, 0, 3)
+
+			t.Run("Create", func(t *testing.T) {
+				for i := 0; i < cap(codeModJobs); i++ {
+					c := &a8n.CodeModJob{
+						CodeModID: int64(i + 1),
+						RepoID:    1,
+						Diff:      "+ foobar - barfoo",
+						Error:     "only set on error",
+					}
+
+					want := c.Clone()
+					have := c
+
+					err := s.CreateCodeModJob(ctx, have)
+					if err != nil {
+						t.Fatal(err)
+					}
+
+					if have.ID == 0 {
+						t.Fatal("ID should not be zero")
+					}
+
+					want.ID = have.ID
+					want.CreatedAt = now
+					want.UpdatedAt = now
+
+					if diff := cmp.Diff(have, want); diff != "" {
+						t.Fatal(diff)
+					}
+
+					codeModJobs = append(codeModJobs, c)
+				}
+			})
+
+			t.Run("Count", func(t *testing.T) {
+				count, err := s.CountCodeModJobs(ctx, CountCodeModJobsOpts{})
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				if have, want := count, int64(len(codeModJobs)); have != want {
+					t.Fatalf("have count: %d, want: %d", have, want)
+				}
+
+				count, err = s.CountCodeModJobs(ctx, CountCodeModJobsOpts{CodeModID: 1})
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				if have, want := count, int64(1); have != want {
+					t.Fatalf("have count: %d, want: %d", have, want)
+				}
+			})
+
+			t.Run("List", func(t *testing.T) {
+				for i := 1; i <= len(codeModJobs); i++ {
+					opts := ListCodeModJobsOpts{CodeModID: int64(i)}
+
+					ts, next, err := s.ListCodeModJobs(ctx, opts)
+					if err != nil {
+						t.Fatal(err)
+					}
+
+					if have, want := next, int64(0); have != want {
+						t.Fatalf("opts: %+v: have next %v, want %v", opts, have, want)
+					}
+
+					have, want := ts, codeModJobs[i-1:i]
+					if len(have) != len(want) {
+						t.Fatalf("listed %d codeModJobs, want: %d", len(have), len(want))
+					}
+
+					if diff := cmp.Diff(have, want); diff != "" {
+						t.Fatalf("opts: %+v, diff: %s", opts, diff)
+					}
+				}
+
+				for i := 1; i <= len(codeModJobs); i++ {
+					cs, next, err := s.ListCodeModJobs(ctx, ListCodeModJobsOpts{Limit: i})
+					if err != nil {
+						t.Fatal(err)
+					}
+
+					{
+						have, want := next, int64(0)
+						if i < len(codeModJobs) {
+							want = codeModJobs[i].ID
+						}
+
+						if have != want {
+							t.Fatalf("limit: %v: have next %v, want %v", i, have, want)
+						}
+					}
+
+					{
+						have, want := cs, codeModJobs[:i]
+						if len(have) != len(want) {
+							t.Fatalf("listed %d codeModJobs, want: %d", len(have), len(want))
+						}
+
+						if diff := cmp.Diff(have, want); diff != "" {
+							t.Fatal(diff)
+						}
+					}
+				}
+
+				{
+					var cursor int64
+					for i := 1; i <= len(codeModJobs); i++ {
+						opts := ListCodeModJobsOpts{Cursor: cursor, Limit: 1}
+						have, next, err := s.ListCodeModJobs(ctx, opts)
+						if err != nil {
+							t.Fatal(err)
+						}
+
+						want := codeModJobs[i-1 : i]
+						if diff := cmp.Diff(have, want); diff != "" {
+							t.Fatalf("opts: %+v, diff: %s", opts, diff)
+						}
+
+						cursor = next
+					}
+				}
+			})
+
+			t.Run("Update", func(t *testing.T) {
+				for _, c := range codeModJobs {
+					now = now.Add(time.Second)
+					c.StartedAt = now
+					c.FinishedAt = now
+					c.Diff += "-updated"
+					c.Error += "-updated"
+
+					want := c
+					want.UpdatedAt = now
+
+					have := c.Clone()
+					if err := s.UpdateCodeModJob(ctx, have); err != nil {
+						t.Fatal(err)
+					}
+
+					if diff := cmp.Diff(have, want); diff != "" {
+						t.Fatal(diff)
+					}
+				}
+			})
+
+			t.Run("Get", func(t *testing.T) {
+				t.Run("ByID", func(t *testing.T) {
+					if len(codeModJobs) == 0 {
+						t.Fatal("codeModJobs is empty")
+					}
+					want := codeModJobs[0]
+					opts := GetCodeModJobOpts{ID: want.ID}
+
+					have, err := s.GetCodeModJob(ctx, opts)
+					if err != nil {
+						t.Fatal(err)
+					}
+
+					if diff := cmp.Diff(have, want); diff != "" {
+						t.Fatal(diff)
+					}
+				})
+
+				t.Run("NoResults", func(t *testing.T) {
+					opts := GetCodeModJobOpts{ID: 0xdeadbeef}
+
+					_, have := s.GetCodeModJob(ctx, opts)
+					want := ErrNoResults
+
+					if have != want {
+						t.Fatalf("have err %v, want %v", have, want)
+					}
+				})
+			})
+
+			t.Run("Delete", func(t *testing.T) {
+				for i := range codeModJobs {
+					err := s.DeleteCodeModJob(ctx, codeModJobs[i].ID)
+					if err != nil {
+						t.Fatal(err)
+					}
+
+					count, err := s.CountCodeModJobs(ctx, CountCodeModJobsOpts{})
+					if err != nil {
+						t.Fatal(err)
+					}
+
+					if have, want := count, int64(len(codeModJobs)-(i+1)); have != want {
+						t.Fatalf("have count: %d, want: %d", have, want)
+					}
+				}
+			})
+		})
+	}
+}
+
+func deferConstraint(t *testing.T, tx *sql.Tx, constraint string) {
+	t.Helper()
+
+	_, err := tx.Exec("SET CONSTRAINTS " + constraint + " DEFERRED")
+	if err != nil {
+		t.Fatal(err)
 	}
 }

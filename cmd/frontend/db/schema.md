@@ -34,6 +34,7 @@ Foreign-key constraints:
  created_at        | timestamp with time zone | not null default now()
  updated_at        | timestamp with time zone | not null default now()
  changeset_ids     | jsonb                    | not null default '{}'::jsonb
+ code_mod_id       | integer                  | 
 Indexes:
     "campaigns_pkey" PRIMARY KEY, btree (id)
     "campaigns_changeset_ids_gin_idx" gin (changeset_ids)
@@ -44,6 +45,7 @@ Check constraints:
     "campaigns_has_1_namespace" CHECK ((namespace_user_id IS NULL) <> (namespace_org_id IS NULL))
 Foreign-key constraints:
     "campaigns_author_id_fkey" FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE DEFERRABLE
+    "campaigns_code_mod_id_fkey" FOREIGN KEY (code_mod_id) REFERENCES code_mods(id) DEFERRABLE
     "campaigns_namespace_org_id_fkey" FOREIGN KEY (namespace_org_id) REFERENCES orgs(id) ON DELETE CASCADE DEFERRABLE
     "campaigns_namespace_user_id_fkey" FOREIGN KEY (namespace_user_id) REFERENCES users(id) ON DELETE CASCADE DEFERRABLE
 Triggers:
@@ -100,6 +102,48 @@ Referenced by:
     TABLE "changeset_events" CONSTRAINT "changeset_events_changeset_id_fkey" FOREIGN KEY (changeset_id) REFERENCES changesets(id) ON DELETE CASCADE DEFERRABLE
 Triggers:
     trig_delete_changeset_reference_on_campaigns AFTER DELETE ON changesets FOR EACH ROW EXECUTE PROCEDURE delete_changeset_reference_on_campaigns()
+
+```
+
+# Table "public.code_mod_jobs"
+```
+   Column    |           Type           |                         Modifiers                          
+-------------+--------------------------+------------------------------------------------------------
+ id          | bigint                   | not null default nextval('code_mod_jobs_id_seq'::regclass)
+ code_mod_id | bigint                   | not null
+ repo_id     | bigint                   | not null
+ rev         | text                     | not null
+ diff        | text                     | not null
+ error       | text                     | not null
+ started_at  | timestamp with time zone | 
+ finished_at | timestamp with time zone | 
+ created_at  | timestamp with time zone | not null default now()
+ updated_at  | timestamp with time zone | not null default now()
+Indexes:
+    "code_mod_jobs_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "code_mod_jobs_code_mod_id_fkey" FOREIGN KEY (code_mod_id) REFERENCES code_mods(id) ON DELETE CASCADE DEFERRABLE
+    "code_mod_jobs_repo_id_fkey" FOREIGN KEY (repo_id) REFERENCES repo(id) DEFERRABLE
+
+```
+
+# Table "public.code_mods"
+```
+    Column     |           Type           |                       Modifiers                        
+---------------+--------------------------+--------------------------------------------------------
+ id            | bigint                   | not null default nextval('code_mods_id_seq'::regclass)
+ code_mod_spec | text                     | not null
+ arguments     | jsonb                    | not null default '{}'::jsonb
+ created_at    | timestamp with time zone | not null default now()
+ updated_at    | timestamp with time zone | not null default now()
+Indexes:
+    "code_mods_pkey" PRIMARY KEY, btree (id)
+Check constraints:
+    "code_mods_arguments_check" CHECK (jsonb_typeof(arguments) = 'object'::text)
+    "code_mods_code_mod_spec_check" CHECK (code_mod_spec <> ''::text)
+Referenced by:
+    TABLE "campaigns" CONSTRAINT "campaigns_code_mod_id_fkey" FOREIGN KEY (code_mod_id) REFERENCES code_mods(id) DEFERRABLE
+    TABLE "code_mod_jobs" CONSTRAINT "code_mod_jobs_code_mod_id_fkey" FOREIGN KEY (code_mod_id) REFERENCES code_mods(id) ON DELETE CASCADE DEFERRABLE
 
 ```
 
@@ -612,6 +656,7 @@ Check constraints:
     "repo_sources_check" CHECK (jsonb_typeof(sources) = 'object'::text)
 Referenced by:
     TABLE "changesets" CONSTRAINT "changesets_repo_id_fkey" FOREIGN KEY (repo_id) REFERENCES repo(id) ON DELETE CASCADE DEFERRABLE
+    TABLE "code_mod_jobs" CONSTRAINT "code_mod_jobs_repo_id_fkey" FOREIGN KEY (repo_id) REFERENCES repo(id) DEFERRABLE
     TABLE "default_repos" CONSTRAINT "default_repos_repo_id_fkey" FOREIGN KEY (repo_id) REFERENCES repo(id)
     TABLE "discussion_threads_target_repo" CONSTRAINT "discussion_threads_target_repo_repo_id_fkey" FOREIGN KEY (repo_id) REFERENCES repo(id) ON DELETE CASCADE
 

@@ -740,6 +740,39 @@ func (r *searchResolver) suggestFilePaths(ctx context.Context, limit int) ([]*se
 	return suggestions, nil
 }
 
+// SearchRepos searches for the provided query but only the the unique list of
+// repositories belonging to the search results.
+// It's used by a8n to search.
+func (r *schemaResolver) SearchRepos(ctx context.Context, plainQuery string) ([]*RepositoryResolver, error) {
+	qs, isRegexp := query.HandlePatternType(plainQuery, false)
+	q, err := query.ParseAndCheck(qs)
+	if err != nil {
+		return nil, err
+	}
+
+	var finalPatternType string
+	if isRegexp {
+		finalPatternType = "regexp"
+	} else {
+		finalPatternType = "literal"
+	}
+
+	sr := &searchResolver{
+		query:         q,
+		originalQuery: plainQuery,
+		pagination:    nil,
+		patternType:   finalPatternType,
+		zoekt:         search.Indexed(),
+		searcherURLs:  search.SearcherURLs(),
+	}
+
+	results, err := sr.Results(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return results.Repositories(), nil
+}
+
 func unionRegExps(patterns []string) string {
 	if len(patterns) == 0 {
 		return ""

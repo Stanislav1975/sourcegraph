@@ -1,0 +1,6 @@
+BEGIN;
+
+DROP TABLE IF EXISTS code_mod_jobs;
+
+COMMIT;
+

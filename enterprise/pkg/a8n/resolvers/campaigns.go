@@ -187,3 +187,16 @@ func (r *campaignResolver) ChangesetCountsOverTime(
 
 	return resolvers, nil
 }
+
+func (r *campaignResolver) CodeMod(ctx context.Context) (graphqlbackend.CodeModResolver, error) {
+	if r.Campaign.CodeModID == 0 {
+		return nil, nil
+	}
+
+	mod, err := r.store.GetCodeMod(ctx, ee.GetCodeModOpts{ID: r.Campaign.CodeModID})
+	if err != nil {
+		return nil, err
+	}
+
+	return &codeModResolver{store: r.store, codeMod: mod}, nil
+}
