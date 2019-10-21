@@ -8,6 +8,7 @@ import { Driver } from '../../../shared/src/e2e/driver'
 import { getConfig } from '../../../shared/src/e2e/config'
 import { getTestFixtures } from './util/init'
 import { ensureLoggedInOrCreateTestUser } from './util/helpers'
+import { check } from 'prettier'
 
 describe('Core functionality regression test suite', () => {
     const testUsername = 'test-core'
@@ -130,7 +131,17 @@ describe('Core functionality regression test suite', () => {
         // TODO(@sourcegraph/web)
     })
     test('User emails page', async () => {
-        // TODO(@sourcegraph/web)
+        await driver.page.goto(driver.sourcegraphBaseUrl + `/users/${testUsername}/settings/emails`)
+        await driver.replaceText({ selector: '.e2e-user-email-add-input', newText: 'sg-test-account@protonmail.com' })
+        await driver.clickElementWithText('Add')
+        await driver.waitForElementWithText('sg-test-account@protonmail.com')
+        await driver.findElementWithText('Verification pending')
+
+        // Email notification sent (need to log into Gmail?)
+        // - don't log into Gmail for now...
+        // Verify an email
+        // Receive notifications
+        // Unverify an email
     })
     test('Access tokens work', async () => {
         // TODO(@sourcegraph/web)

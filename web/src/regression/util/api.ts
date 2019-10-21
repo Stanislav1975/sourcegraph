@@ -320,3 +320,22 @@ export function getManagementConsoleState(gqlClient: GraphQLClient): Promise<GQL
         )
         .toPromise()
 }
+
+export function setUserEmailVerified(gqlClient: GraphQLClient): Promise<void> {
+    // >>>>>
+    return gqlClient
+        .mutateGraphQL(
+            gql`
+                mutation SetUserEmailVerified($user: ID!, $email: String!, $verified: Boolean!) {
+                    setUserEmailVerified(user: $user, email: $email, verified: $verified) {
+                        alwaysNil
+                    }
+                }
+            `,
+            {
+                /* TODO */
+            }
+        )
+        .pipe(map(dataOrThrowErrors))
+        .toPromise()
+}

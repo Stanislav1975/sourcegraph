@@ -407,6 +407,41 @@ export class Driver {
         }
     }
 
+    public async waitForElementWithText(
+        text: string,
+        { tagName: selector }: FindElementOptions = {}
+    ): Promise<puppeteer.ElementHandle<Element>> {
+        const tag = selector || '*'
+        const queries = [
+            `//${tag}[text() = ${JSON.stringify(text)}]`,
+            `//${tag}[starts-with(text(), ${JSON.stringify(text)})]`,
+            `//${tag}[contains(text(), ${JSON.stringify(text)})]`,
+            `//${tag}[contains(., ${JSON.stringify(text)})]`,
+        ]
+
+        for (const query of queries) {
+            try {
+                const handle = await this.page.waitForFunction(
+                    query => document.evaluate(query, document).iterateNext(),
+                    undefined,
+                    query
+                )
+                if (!handle) {
+                    continue
+                }
+                const elementHandle = handle.asElement()
+                if (!elementHandle) {
+                    await handle.dispose()
+                    continue
+                }
+                return elementHandle
+            } catch (error) {
+                // Catch timeouts
+            }
+        }
+        throw new Error(`Did not find element with text ${JSON.stringify(text)}, tagName: ${tag} `)
+    }
+
     /**
      * Finds the "best" element containing the text, where "best" is roughly defined as "what the
      * user would click on if you told them to click on the text".
