@@ -60,7 +60,12 @@ export async function setTestDefaults(driver: Driver, gqlClient: GraphQLClient):
     )
 }
 
-export async function getTestFixtures(
+/**
+ * Returns tools for regression tests. The GraphQL client is authenticated with the sudo token, so
+ * therefore has admin rights. The driver drives the puppeteer browser page instance. The resource
+ * manager manages cleanup of resources created during the test.
+ */
+export async function getTestTools(
     config: Pick<
         Config,
         | 'sourcegraphBaseUrl'

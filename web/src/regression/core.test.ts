@@ -6,9 +6,9 @@ import { TestResourceManager } from './util/TestResourceManager'
 import { GraphQLClient } from './util/GraphQLClient'
 import { Driver } from '../../../shared/src/e2e/driver'
 import { getConfig } from '../../../shared/src/e2e/config'
-import { getTestFixtures } from './util/init'
+import { getTestTools } from './util/init'
 import { ensureLoggedInOrCreateTestUser } from './util/helpers'
-import { check } from 'prettier'
+import { setUserEmailVerified } from './util/api'
 
 describe('Core functionality regression test suite', () => {
     const testUsername = 'test-core'
@@ -29,7 +29,7 @@ describe('Core functionality regression test suite', () => {
     let gqlClient: GraphQLClient
     let resourceManager: TestResourceManager
     beforeAll(async () => {
-        ;({ driver, gqlClient, resourceManager } = await getTestFixtures(config))
+        ;({ driver, gqlClient, resourceManager } = await getTestTools(config))
         resourceManager.add(
             'User',
             testUsername,
@@ -129,20 +129,21 @@ describe('Core functionality regression test suite', () => {
 
     test('User profile page', async () => {
         // TODO(@sourcegraph/web)
+        // TODO: display name
+        // TODO: avatar URL
     })
     test('User emails page', async () => {
+        const testEmail = 'sg-test-account@protonmail.com'
         await driver.page.goto(driver.sourcegraphBaseUrl + `/users/${testUsername}/settings/emails`)
         await driver.replaceText({ selector: '.e2e-user-email-add-input', newText: 'sg-test-account@protonmail.com' })
         await driver.clickElementWithText('Add')
-        await driver.waitForElementWithText('sg-test-account@protonmail.com')
+        await driver.waitForElementWithText(testEmail)
         await driver.findElementWithText('Verification pending')
-
-        // Email notification sent (need to log into Gmail?)
-        // - don't log into Gmail for now...
-        // Verify an email
-        // Receive notifications
-        // Unverify an email
+        await setUserEmailVerified(gqlClient, testUsername, testEmail, true)
+        await driver.page.reload()
+        await driver.waitForElementWithText('Verified')
     })
+
     test('Access tokens work', async () => {
         // TODO(@sourcegraph/web)
     })
