@@ -1,6 +1,6 @@
 # LSIF worker jobs
 
-The following job types are enqueued into [node-resque](https://github.com/taskrabbit/node-resque) and handled by the an instance of the worker process. Each job is enqueued with its `class` (the job type) and its `args` (a positional sequence of values).
+The following job types are enqueued into [bull](https://github.com/OptimalBits/bull) and handled by the an instance of the worker process. Each job is enqueued with a `name`, which determines how the job is performed, and an `args` object.
 
 ### `convert(repository, commit, filepath)`
 
