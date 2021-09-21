@@ -1006,6 +1006,11 @@ braces@^2.3.1:
     split-string "^3.0.2"
     to-regex "^3.0.1"
 
+browser-or-node@^1.2.1:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/browser-or-node/-/browser-or-node-1.3.0.tgz#f2a4e8568f60263050a6714b2cc236bb976647a7"
+  integrity sha512-0F2z/VSnLbmEeBcUrSuDH5l0HxTXdQQzLjkmBR4cYfvg1zJrKSlmIZFqyFR8oX0NrwPhy3c3HQ6i3OxMbew4Tg==
+
 browser-process-hrtime@^0.1.2:
   version "0.1.3"
   resolved "https://registry.npmjs.org/browser-process-hrtime/-/browser-process-hrtime-0.1.3.tgz#616f00faef1df7ec1b5bf9cfe2bdc3170f26c7b4"
@@ -2565,6 +2570,11 @@ isobject@^3.0.0, isobject@^3.0.1:
   resolved "https://registry.npmjs.org/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
   integrity sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
 
+isomorphic-ws@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/isomorphic-ws/-/isomorphic-ws-4.0.1.tgz#55fd4cd6c5e6491e76dc125938dd863f5cd4f2dc"
+  integrity sha512-BhBvN2MBpWTaSHdWRb/bwdZJ1WaehQ2L1KngkCkfLUGF0mAWAT1sQUQacEmQ0jXkFw/czDXPNQSL5u2/Krsz1w==
+
 isstream@~0.1.2:
   version "0.1.2"
   resolved "https://registry.npmjs.org/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
@@ -3155,17 +3165,18 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-lightstep-tracer@^0.22.3:
-  version "0.22.3"
-  resolved "https://registry.npmjs.org/lightstep-tracer/-/lightstep-tracer-0.22.3.tgz#d7cfe345d35f81a7405feb11d6eafd22d3dfd3b1"
-  integrity sha512-IBImMI3rsbJceHr+KRNxIBGGxOCcZYTBzYg/WIFzxxg39Ib12ray8K8qVsp+h+KXNDIP092jzBZwNz/moJ51FQ==
+lightstep-tracer@^0.32.0:
+  version "0.32.0"
+  resolved "https://registry.yarnpkg.com/lightstep-tracer/-/lightstep-tracer-0.32.0.tgz#751df41be148c1ac7f53932b754de776472886e8"
+  integrity sha512-VjwAkMLUcy5uAp/WCC/qic065cQ3l9d7/yEhj6hI1D46tKMZI1tMgwJOQdjqohAGsa6NEcYjdLkEqfmGC43Elg==
   dependencies:
     async "1.5.0"
     eventemitter3 "1.1.1"
     google-protobuf "3.6.1"
     hex2dec "1.0.1"
+    opentracing "^0.14.4"
     source-map-support "0.3.3"
-    thrift "0.12.0"
+    thrift "^0.14.1"
 
 load-json-file@^4.0.0:
   version "4.0.0"
@@ -4894,14 +4905,16 @@ thenify-all@^1.0.0:
   dependencies:
     any-promise "^1.0.0"
 
-thrift@0.12.0:
-  version "0.12.0"
-  resolved "https://registry.npmjs.org/thrift/-/thrift-0.12.0.tgz#67678beba655ca40dd30744b65455f2b9f8e9912"
-  integrity sha512-qE9PZi4XSbSQLz/sNxj6+ZiiFQYgbM4GmlO3CS/EVJBjCVfd46Zw0aiVIqOvVn74M7XUGyjOs2chAOwK4d4/hQ==
+thrift@^0.14.1:
+  version "0.14.2"
+  resolved "https://registry.yarnpkg.com/thrift/-/thrift-0.14.2.tgz#723c38a27da2d235ee744b5850ea61d29f3f988e"
+  integrity sha512-bW8EaE6iw3hSt4HB2HpBdHW86Xpb9IUJfqufx4NwEu7OGuIpS0ISj+Yy1Z1Wvhfno6SPNhKRJ1qFXea84HcrOQ==
   dependencies:
+    browser-or-node "^1.2.1"
+    isomorphic-ws "^4.0.1"
     node-int64 "^0.4.0"
     q "^1.5.0"
-    ws "^5.0.0"
+    ws "^5.2.2"
 
 thriftrw@^3.5.0:
   version "3.11.3"
@@ -5367,10 +5380,17 @@ write-file-atomic@2.4.1:
     imurmurhash "^0.1.4"
     signal-exit "^3.0.2"
 
-ws@^5.0.0, ws@^5.2.0:
+ws@^5.2.0:
   version "5.2.2"
   resolved "https://registry.npmjs.org/ws/-/ws-5.2.2.tgz#dffef14866b8e8dc9133582514d1befaf96e980f"
   integrity sha512-jaHFD6PFv6UgoIVda6qZllptQsMlDEJkTQcybzzXDYM1XO9Y8em691FGMPmM46WGyLU4z9KMgQN+qrux/nhlHA==
+  dependencies:
+    async-limiter "~1.0.0"
+
+ws@^5.2.2:
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-5.2.3.tgz#05541053414921bc29c63bee14b8b0dd50b07b3d"
+  integrity sha512-jZArVERrMsKUatIdnLzqvcfydI85dvd/Fp1u/VOpfdDWQ4c9qWXe+VIeAbQ5FrDwciAkr+lzofXLz3Kuf26AOA==
   dependencies:
     async-limiter "~1.0.0"
 
