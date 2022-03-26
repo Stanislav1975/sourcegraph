@@ -1537,6 +1537,11 @@
   dependencies:
     prop-types "^15.6.2"
 
+"@snyk/protect@^1.883.0":
+  version "1.883.0"
+  resolved "https://registry.yarnpkg.com/@snyk/protect/-/protect-1.883.0.tgz#048015d4e0f1c18b6abc7e2773b6374b620bd399"
+  integrity sha512-N/EqG6P/qNYWOfuZAfGS1d7yGwGY4zV7AvKtgTzdhazDt7G/mRLG6czLSWNWGEFYBiMsYRVPHdc5It3bjhmIGw==
+
 "@sourcegraph/babel-plugin-transform-react-hot-loader-wrapper@^1.0.0":
   version "1.0.0"
   resolved "https://registry.npmjs.org/@sourcegraph/babel-plugin-transform-react-hot-loader-wrapper/-/babel-plugin-transform-react-hot-loader-wrapper-1.0.0.tgz#1ed02df050b6c3a71878870205cc8b6180da0313"
@@ -1600,6 +1605,7 @@
 
 "@sourcegraph/extension-api-types@link:packages/@sourcegraph/extension-api-types":
   version "0.0.0"
+  uid ""
 
 "@sourcegraph/prettierrc@^3.0.1":
   version "3.0.1"
@@ -16204,6 +16210,7 @@ source-map@^0.7.3:
 
 "sourcegraph@link:packages/sourcegraph-extension-api":
   version "0.0.0"
+  uid ""
 
 space-separated-tokens@^1.0.0:
   version "1.1.2"
