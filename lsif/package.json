@@ -18,7 +18,7 @@
     "ioredis": "^4.14.0",
     "jaeger-client": "^3.17.0",
     "json5": "^2.1.1",
-    "lightstep-tracer": "^0.22.3",
+    "lightstep-tracer": "^0.32.0",
     "lodash": "^4.17.15",
     "logform": "^2.1.2",
     "lsif-protocol": "0.4.3",
