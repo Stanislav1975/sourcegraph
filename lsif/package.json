@@ -36,7 +36,8 @@
     "uuid": "^3.3.3",
     "vscode-languageserver": "^5.2.1",
     "winston": "^3.2.1",
-    "yallist": "^3.0.3"
+    "yallist": "^3.0.3",
+    "@snyk/protect": "latest"
   },
   "devDependencies": {
     "@sourcegraph/tsconfig": "^4.0.0",
@@ -78,6 +79,9 @@
     "eslint": "../node_modules/.bin/eslint 'src/**/*.ts?(x)'",
     "run:server": "tsc-watch --onSuccess \"node -r source-map-support/register out/server.js\" --noClear",
     "run:worker": "tsc-watch --onSuccess \"node -r source-map-support/register out/worker.js\" --noClear",
-    "schema": "typescript-json-schema ./node_modules/lsif-protocol/lib/protocol.d.ts '*' -o src/lsif.schema.json --titles --ignoreErrors --noExtraProps --required --strictNullChecks"
-  }
+    "schema": "typescript-json-schema ./node_modules/lsif-protocol/lib/protocol.d.ts '*' -o src/lsif.schema.json --titles --ignoreErrors --noExtraProps --required --strictNullChecks",
+    "prepare": "yarn run snyk-protect",
+    "snyk-protect": "snyk-protect"
+  },
+  "snyk": true
 }
