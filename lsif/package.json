@@ -17,7 +17,7 @@
     "got": "^9.6.0",
     "ioredis": "^4.14.0",
     "jaeger-client": "^3.17.0",
-    "json5": "^2.1.1",
+    "json5": "^2.2.2",
     "lightstep-tracer": "^0.22.3",
     "lodash": "^4.17.15",
     "logform": "^2.1.2",
