@@ -68,7 +68,7 @@ require (
 	github.com/golangplus/testing v0.0.0-20180327235837-af21d9c3145e // indirect
 	github.com/gomodule/oauth1 v0.0.0-20181215000758-9a59ed3b0a84
 	github.com/gomodule/redigo v2.0.0+incompatible
-	github.com/google/go-cmp v0.3.1
+	github.com/google/go-cmp v0.5.5
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-github/v28 v28.1.1
 	github.com/google/go-querystring v1.0.0
@@ -122,10 +122,10 @@ require (
 	github.com/peterbourgon/ff v1.6.1-0.20190916204019-6cd704ec2eeb
 	github.com/peterh/liner v1.1.0 // indirect
 	github.com/peterhellberg/link v1.0.0
-	github.com/pkg/errors v0.8.1
+	github.com/pkg/errors v0.9.1
 	github.com/pkg/profile v1.3.0 // indirect
 	github.com/pquerna/cachecontrol v0.0.0-20180517163645-1555304b9b35 // indirect
-	github.com/prometheus/client_golang v1.1.0
+	github.com/prometheus/client_golang v1.11.1
 	github.com/russellhaering/gosaml2 v0.3.2-0.20190403162508-649841e7f48a
 	github.com/russellhaering/goxmldsig v0.0.0-20180430223755-7acd5e4a6ef7
 	github.com/russross/blackfriday v2.0.0+incompatible // indirect
@@ -174,13 +174,13 @@ require (
 	go.starlark.net v0.0.0-20190919145610-979af19b165c // indirect
 	go.uber.org/automaxprocs v1.2.0
 	golang.org/x/arch v0.0.0-20190927153633-4e8777c89be4 // indirect
-	golang.org/x/crypto v0.0.0-20191010185427-af544f31c8ac
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/exp v0.0.0-20191002040644-a1355ae1e2c3 // indirect
 	golang.org/x/lint v0.0.0-20190930215403-16217165b5de // indirect
-	golang.org/x/net v0.0.0-20191009170851-d66e71096ffb
+	golang.org/x/net v0.0.0-20200625001655-4c5254603344
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
-	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/sys v0.0.0-20191010194322-b09406accb47
+	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
+	golang.org/x/sys v0.0.0-20210603081109-ebe580a85c40
 	golang.org/x/time v0.0.0-20190921001708-c4c64cad1fd0
 	golang.org/x/tools v0.0.0-20191010201905-e5ffc44a6fee
 	google.golang.org/appengine v1.6.5 // indirect
@@ -192,7 +192,7 @@ require (
 	gopkg.in/karlseguin/expect.v1 v1.0.1 // indirect
 	gopkg.in/square/go-jose.v2 v2.3.1 // indirect
 	gopkg.in/src-d/go-git.v4 v4.13.1
-	gopkg.in/yaml.v2 v2.2.4
+	gopkg.in/yaml.v2 v2.3.0
 	mvdan.cc/unparam v0.0.0-20190917161559-b83a221c10a2 // indirect
 	sourcegraph.com/sqs/pbtypes v1.0.0 // indirect
 )
