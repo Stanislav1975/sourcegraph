@@ -39,7 +39,7 @@
     "yallist": "^3.0.3"
   },
   "devDependencies": {
-    "@sourcegraph/tsconfig": "^4.0.0",
+    "@sourcegraph/tsconfig": "^4.0.1",
     "@types/bloomfilter": "0.0.0",
     "@types/body-parser": "1.17.0",
     "@types/bull": "^3.10.3",
