@@ -1545,12 +1545,12 @@
     "@babel/helper-module-imports" "^7.0.0"
     "@babel/traverse" "^7.4.4"
 
-"@sourcegraph/codeintellify@^6.2.2":
-  version "6.2.2"
-  resolved "https://registry.npmjs.org/@sourcegraph/codeintellify/-/codeintellify-6.2.2.tgz#872e6eac678206cfe9d9c0c096cd04fb62e011fb"
-  integrity sha512-O8wc2TqZlhUykP6r9amrBtHP3BIuqzqf/fTbuK/EBdWnXlSra5uBmuxm6FPBM4koCKZ6s2wCOcTEVdi0DY8sDA==
+"@sourcegraph/codeintellify@^6.4.0":
+  version "6.4.0"
+  resolved "https://registry.npmjs.org/@sourcegraph/codeintellify/-/codeintellify-6.4.0.tgz#ef7e2e17e265731a9701b4a02f1ee131687194c7"
+  integrity sha512-Ke7zCPQDCbKLbDOzXFpORLNi7r1VP3NatwR1C9tx/1NQcQSODUaXwrKlc+X88/2SL/Xz8qY6jndOAvRNfUk/dw==
   dependencies:
-    "@sourcegraph/event-positions" "^1.0.2"
+    "@sourcegraph/event-positions" "^1.0.4"
     "@sourcegraph/extension-api-types" "^2.0.0"
     lodash "^4.17.10"
     rxjs "^6.3.3"
@@ -1577,10 +1577,10 @@
     eslint-plugin-react "^7.14.3"
     eslint-plugin-react-hooks "^1.6.1"
 
-"@sourcegraph/event-positions@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/@sourcegraph/event-positions/-/event-positions-1.0.2.tgz#4c8150d14bdd25c4a2d6b2e14d589948a98ae4fc"
-  integrity sha512-EAfB5fz1AvUGw3MfHqH+i0fki8NqHLUSxNPeqTf5tnjvOyh/93tLug3HSEHfqGhCOFYTEUpXEYZ1NRNBci+XvA==
+"@sourcegraph/event-positions@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/@sourcegraph/event-positions/-/event-positions-1.0.4.tgz#031541374b725cfb0cbefaa07add020b1a119a60"
+  integrity sha512-mrWIEpC9UuAZwExMQlRfLaLLwC9x8WQMAOEYFHGEdXCzXEHqaZu22aR8PtrQEMtwia6eIzvZl6uYp0gDDGLo2g==
   dependencies:
     "@sourcegraph/extension-api-types" "^2.0.0"
     lodash "^4.17.10"
@@ -1599,7 +1599,7 @@
   integrity sha512-Te7F1RQJLBH4C8wQ2xz0nPC2vpe13F80V+Yv+c3GySOoh4DcLNN4P5u51Kh4aZPqeS5DJ7CKvHyX2SM/1EBXNg==
 
 "@sourcegraph/extension-api-types@link:packages/@sourcegraph/extension-api-types":
-  version "0.0.0"
+  version "2.0.0"
 
 "@sourcegraph/prettierrc@^3.0.1":
   version "3.0.1"
@@ -7035,12 +7035,7 @@ entities@^1.1.1, entities@~1.1.1:
   resolved "https://registry.npmjs.org/entities/-/entities-1.1.2.tgz#bdfa735299664dfafd34529ed4f8522a275fea56"
   integrity sha512-f2LZMYl1Fzu7YSBKg+RoROelpOaNrcGmE9AZubeDfrCEia483oW4MI4VyFd5VNHIgQ/7qm1I0wUHK1eJnn2y2w==
 
-entities@^2.0.0:
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/entities/-/entities-2.2.0.tgz#098dc90ebb83d8dffa089d55256b351d34c4da55"
-  integrity sha512-p92if5Nz619I0w+akJrLZH0MX0Pb5DX39XOwQTtXSdQQOaYH03S1uIQp4mhOZtAXrxq4ViO67YTiLBo2638o9A==
-
-entities@~2.1.0:
+entities@^2.0.0, entities@~2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/entities/-/entities-2.1.0.tgz#992d3129cf7df6870b96c57858c249a120f8b8b5"
   integrity sha512-hCx1oky9PFrJ611mf0ifBLBRW8lUUVRlFolb5gWRfIELabBlbp9xZvrqZLZAs+NxFnbfQoeGd8wDkygjg7U85w==
@@ -16203,7 +16198,7 @@ source-map@^0.7.3:
   integrity sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==
 
 "sourcegraph@link:packages/sourcegraph-extension-api":
-  version "0.0.0"
+  version "23.0.1"
 
 space-separated-tokens@^1.0.0:
   version "1.1.2"
