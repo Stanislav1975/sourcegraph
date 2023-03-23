@@ -6,7 +6,7 @@ RUN apk --no-cache add pcre-dev
 # The comby/comby image is a small binary-only distribution. See the bin and src directories
 # here: https://github.com/comby-tools/comby/tree/master/dockerfiles/alpine
 # hadolint ignore=DL3022
-COPY --from=comby/comby:0.7.0@sha256:7e4995f7c294f447d0b06e3854a829126b210da9a64cbe32154fbe4468659e20 /usr/local/bin/comby /usr/local/bin/comby
+COPY --from=comby/comby:1.7.1@sha256:6a581342b15e0032e6293ea2f4827af70f33646106b7c8900315bcc7d4b63b1a /usr/local/bin/comby /usr/local/bin/comby
 
 ARG COMMIT_SHA="unknown"
 ARG DATE="unknown"
