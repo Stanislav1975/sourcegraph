@@ -1545,15 +1545,16 @@
     "@babel/helper-module-imports" "^7.0.0"
     "@babel/traverse" "^7.4.4"
 
-"@sourcegraph/codeintellify@^6.2.2":
-  version "6.2.2"
-  resolved "https://registry.npmjs.org/@sourcegraph/codeintellify/-/codeintellify-6.2.2.tgz#872e6eac678206cfe9d9c0c096cd04fb62e011fb"
-  integrity sha512-O8wc2TqZlhUykP6r9amrBtHP3BIuqzqf/fTbuK/EBdWnXlSra5uBmuxm6FPBM4koCKZ6s2wCOcTEVdi0DY8sDA==
+"@sourcegraph/codeintellify@^7.4.0":
+  version "7.4.0"
+  resolved "https://registry.npmjs.org/@sourcegraph/codeintellify/-/codeintellify-7.4.0.tgz#9a7392494c5b3a16305c9d51d09f3f85c8ac2d9f"
+  integrity sha512-8I6Bi889i8M2kn3Z6B56VGKs4CoXHn1wr0ULzPIUu7uIluYr9tGQBYSSjmEh6BcHNtFE6ibxnF0Y0sQ339oT8Q==
   dependencies:
-    "@sourcegraph/event-positions" "^1.0.2"
-    "@sourcegraph/extension-api-types" "^2.0.0"
+    "@sourcegraph/event-positions" "^1.0.4"
+    "@sourcegraph/extension-api-types" "^2.1.0"
     lodash "^4.17.10"
-    rxjs "^6.3.3"
+    rxjs "6.6.3"
+    sourcegraph "^24.0.0 || ^25.0.0 || ^25.0.0"
     ts-key-enum "^2.0.0"
 
 "@sourcegraph/comlink@^3.1.1-fork.3":
@@ -1577,10 +1578,10 @@
     eslint-plugin-react "^7.14.3"
     eslint-plugin-react-hooks "^1.6.1"
 
-"@sourcegraph/event-positions@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/@sourcegraph/event-positions/-/event-positions-1.0.2.tgz#4c8150d14bdd25c4a2d6b2e14d589948a98ae4fc"
-  integrity sha512-EAfB5fz1AvUGw3MfHqH+i0fki8NqHLUSxNPeqTf5tnjvOyh/93tLug3HSEHfqGhCOFYTEUpXEYZ1NRNBci+XvA==
+"@sourcegraph/event-positions@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/@sourcegraph/event-positions/-/event-positions-1.0.4.tgz#031541374b725cfb0cbefaa07add020b1a119a60"
+  integrity sha512-mrWIEpC9UuAZwExMQlRfLaLLwC9x8WQMAOEYFHGEdXCzXEHqaZu22aR8PtrQEMtwia6eIzvZl6uYp0gDDGLo2g==
   dependencies:
     "@sourcegraph/extension-api-types" "^2.0.0"
     lodash "^4.17.10"
@@ -1593,13 +1594,13 @@
   dependencies:
     "@sourcegraph/extension-api-types" "^2.0.0"
 
-"@sourcegraph/extension-api-types@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@sourcegraph/extension-api-types/-/extension-api-types-2.0.0.tgz#b38145521c0549b2be300df53bac48b648ccbc2d"
-  integrity sha512-Te7F1RQJLBH4C8wQ2xz0nPC2vpe13F80V+Yv+c3GySOoh4DcLNN4P5u51Kh4aZPqeS5DJ7CKvHyX2SM/1EBXNg==
+"@sourcegraph/extension-api-types@^2.0.0", "@sourcegraph/extension-api-types@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@sourcegraph/extension-api-types/-/extension-api-types-2.1.0.tgz#dcc81eba70371c9aabc7333361f5e1ed63e7c91e"
+  integrity sha512-KWxkyphmlwam8kfYPSmoitKQRMGQCsr1ZRmNZgijT7ABKaVyk/+I5ezt2J213tM04Hi0vyg4L7iH1VCkNvm2Jw==
 
 "@sourcegraph/extension-api-types@link:packages/@sourcegraph/extension-api-types":
-  version "0.0.0"
+  version "2.0.0"
 
 "@sourcegraph/prettierrc@^3.0.1":
   version "3.0.1"
@@ -7035,12 +7036,7 @@ entities@^1.1.1, entities@~1.1.1:
   resolved "https://registry.npmjs.org/entities/-/entities-1.1.2.tgz#bdfa735299664dfafd34529ed4f8522a275fea56"
   integrity sha512-f2LZMYl1Fzu7YSBKg+RoROelpOaNrcGmE9AZubeDfrCEia483oW4MI4VyFd5VNHIgQ/7qm1I0wUHK1eJnn2y2w==
 
-entities@^2.0.0:
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/entities/-/entities-2.2.0.tgz#098dc90ebb83d8dffa089d55256b351d34c4da55"
-  integrity sha512-p92if5Nz619I0w+akJrLZH0MX0Pb5DX39XOwQTtXSdQQOaYH03S1uIQp4mhOZtAXrxq4ViO67YTiLBo2638o9A==
-
-entities@~2.1.0:
+entities@^2.0.0, entities@~2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/entities/-/entities-2.1.0.tgz#992d3129cf7df6870b96c57858c249a120f8b8b5"
   integrity sha512-hCx1oky9PFrJ611mf0ifBLBRW8lUUVRlFolb5gWRfIELabBlbp9xZvrqZLZAs+NxFnbfQoeGd8wDkygjg7U85w==
@@ -15498,10 +15494,10 @@ rxjs-tslint-rules@^4.23.0:
     tsutils "^3.0.0"
     tsutils-etc "^1.1.0"
 
-rxjs@^6.3.2, rxjs@^6.3.3, rxjs@^6.4.0, rxjs@^6.5.3:
-  version "6.5.3"
-  resolved "https://registry.npmjs.org/rxjs/-/rxjs-6.5.3.tgz#510e26317f4db91a7eb1de77d9dd9ba0a4899a3a"
-  integrity sha512-wuYsAYYFdWTAnAaPoKGNhfpWwKZbJW+HgAJ+mImp+Epl7BG8oNWBCTyRM8gba9k4lk8BgWdoYm21Mo/RYhhbgA==
+rxjs@6.6.3, rxjs@^6.3.2, rxjs@^6.4.0, rxjs@^6.5.3:
+  version "6.6.3"
+  resolved "https://registry.npmjs.org/rxjs/-/rxjs-6.6.3.tgz#8ca84635c4daa900c0d3967a6ee7ac60271ee552"
+  integrity sha512-trsQc+xYYXZ3urjOiJOuCOa5N3jAZ3eiSpQB5hIT8zGlL2QfnHLJ2r7GMkBGuIausdJN1OneaI6gQlsqNHHmZQ==
   dependencies:
     tslib "^1.9.0"
 
@@ -16202,8 +16198,13 @@ source-map@^0.7.3:
   resolved "https://registry.npmjs.org/source-map/-/source-map-0.7.3.tgz#5302f8169031735226544092e64981f751750383"
   integrity sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==
 
+"sourcegraph@^24.0.0 || ^25.0.0 || ^25.0.0":
+  version "25.7.0"
+  resolved "https://registry.npmjs.org/sourcegraph/-/sourcegraph-25.7.0.tgz#fb1e7a0b7d0547447f524a1d0dcf18407e70cdbf"
+  integrity sha512-3Xdr480Ojkl9fZfaOH7xDy4N8YeQOyccNKVlObOJcj4SR7oFLOra1EFYoMrJPZ9axuD1hSi+34YCx5vocGlRzQ==
+
 "sourcegraph@link:packages/sourcegraph-extension-api":
-  version "0.0.0"
+  version "23.0.1"
 
 space-separated-tokens@^1.0.0:
   version "1.1.2"
