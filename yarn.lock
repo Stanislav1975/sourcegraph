@@ -1126,7 +1126,7 @@
     graphql-ws "^4.9.0"
     meros "^1.1.4"
 
-"@hot-loader/react-dom@^16.9.0", react-dom@^16.8.3, "react-dom@npm:@hot-loader/react-dom@^16.9.0":
+"@hot-loader/react-dom@^16.9.0":
   version "16.9.0"
   resolved "https://registry.npmjs.org/@hot-loader/react-dom/-/react-dom-16.9.0.tgz#7782cec9d78172f3e4c86a317ba7a73bd0271acd"
   integrity sha512-MsOdCBB7c5YNyB4iDDct+tS7AihvYyfwZVV+z/QnbTjPgxH98kqIDXO92nU7tLXp0OtYFErHZfcWjtszP/572w==
@@ -1600,6 +1600,7 @@
 
 "@sourcegraph/extension-api-types@link:packages/@sourcegraph/extension-api-types":
   version "0.0.0"
+  uid ""
 
 "@sourcegraph/prettierrc@^3.0.1":
   version "3.0.1"
@@ -4547,10 +4548,10 @@ boolbase@^1.0.0, boolbase@~1.0.0:
   resolved "https://registry.npmjs.org/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
   integrity sha1-aN/1++YMUes3cl6p4+0xDcwed24=
 
-bootstrap@^4.3.1:
-  version "4.3.1"
-  resolved "https://registry.npmjs.org/bootstrap/-/bootstrap-4.3.1.tgz#280ca8f610504d99d7b6b4bfc4b68cec601704ac"
-  integrity sha512-rXqOmH1VilAt2DyPzluTi2blhk17bO7ef+zLLPlWvG494pDxcM234pJ8wTc/6R40UWizAIIMgxjvxZg5kmsbag==
+bootstrap@^5.0.0:
+  version "5.3.3"
+  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-5.3.3.tgz#de35e1a765c897ac940021900fcbb831602bac38"
+  integrity sha512-8HLCdWgyoMguSO9o+aH+iuZ+aht+mzW0u3HIMzVu7Srrpv7EBBxTnrFlSCskwdY1+EOFQSm7uMJhNQHkdPcmjg==
 
 boxen@^1.2.1:
   version "1.3.0"
@@ -14376,6 +14377,16 @@ react-dom-confetti@^0.1.1:
   dependencies:
     dom-confetti "0.1.1"
 
+react-dom@^16.8.3, "react-dom@npm:@hot-loader/react-dom@^16.9.0":
+  version "16.9.0"
+  resolved "https://registry.npmjs.org/@hot-loader/react-dom/-/react-dom-16.9.0.tgz#7782cec9d78172f3e4c86a317ba7a73bd0271acd"
+  integrity sha512-MsOdCBB7c5YNyB4iDDct+tS7AihvYyfwZVV+z/QnbTjPgxH98kqIDXO92nU7tLXp0OtYFErHZfcWjtszP/572w==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
+    scheduler "^0.15.0"
+
 react-draggable@^3.3.2:
   version "3.3.2"
   resolved "https://registry.npmjs.org/react-draggable/-/react-draggable-3.3.2.tgz#966ef1d90f2387af3c2d8bd3516f601ea42ca359"
@@ -16204,6 +16215,7 @@ source-map@^0.7.3:
 
 "sourcegraph@link:packages/sourcegraph-extension-api":
   version "0.0.0"
+  uid ""
 
 space-separated-tokens@^1.0.0:
   version "1.1.2"
