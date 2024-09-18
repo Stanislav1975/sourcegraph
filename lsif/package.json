@@ -11,7 +11,7 @@
     "body-parser": "^1.19.0",
     "bull": "^3.11.0",
     "delay": "^4.3.0",
-    "express": "^4.17.1",
+    "express": "^4.20.0",
     "express-opentracing": "^0.1.1",
     "express-winston": "^3.3.0",
     "got": "^9.6.0",
